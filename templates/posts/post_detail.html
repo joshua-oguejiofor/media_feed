@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Post by {{ post.author.username }}{% endblock %}
+{% block content %}
+
+
+
+  {% if request.user == post.author %} <!--restrice an invalid user from modifying the data-->
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+    <a href="{% url 'delete_post' post.pk %}"><button type="button">Delete Post</button></a>
+    <a href="{% url 'update_post' post.pk %}"><button type="button">Update Post</button></a>
+    </div>
+  {% endif %}
+  <div class="card">
+    
+    <div class="card-header">
+      <a href="{% url 'profile' post.author.username %}" style="color:inherit;text-decoration:none;">{{ post.author.username }}</a>
+      <span class="muted" style="margin-left:auto;">{{ post.created_at|timesince }} ago</span>
+    </div>
+
+    <div class="card-media">
+      {% if post.media_type == 'document' %}
+        <div class="p-3 border rounded bg-light d-flex align-items-center justify-content-between">
+            <div>
+                <strong>Document Attachment</strong>
+                <small class="d-block text-muted">Click to view or download</small>
+            </div>
+            <a href="{{ post.media_file }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm">
+                📄 View / Download
+            </a>
+        </div>
+      {% elif post.media_type == 'video' %}
+        <video controls preload="metadata"> <!--lazy loading-->
+              <source src="{{ post.media_file }}" type="video/mp4">
+          </video>
+      {% else %}
+        <img src="{{ post.media_file }}" alt="post media" loading="lazy"> <!--lazy loading-->
+      {% endif %}
+
+    </div>
+
+    <div class="card-body">
+      {% if post.caption %}<p class="caption"><strong>{{ post.author.username }}</strong> {{ post.caption }}</p>{% endif %}
+    </div>
+    <div class="actions">
+      {% if user.is_authenticated %}
+        <form class="inline" method="post" action="{% url 'toggle_like' post.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit" class="like {% if liked %}liked{% endif %}">
+            {% if liked %}♥ Liked{% else %}♡ Like{% endif %}
+          </button>
+        </form>
+      {% endif %}
+      <span class="muted">{{ post.likes.count }} like{{ post.likes.count|pluralize }}</span>
+    </div>
+  </div>
+
+  <h3>Comments</h3>
+  {% if user.is_authenticated %}
+    <form method="post">
+      {% csrf_token %}
+      <input type="text" name="text" placeholder="Add a comment..." maxlength="300" required>
+      <button type="submit">Comment</button>
+    </form>
+  {% else %}
+    <p class="muted"><a href="{% url 'login' %}">Log in</a> to comment.</p>
+  {% endif %}
+  {% for comment in comments %}
+    
+    <div class="comment">
+      
+      <strong>{{ comment.user.username }}</strong> {{ comment.text }} <span class="muted">· {{ comment.created_at|timesince }} ago</span>
+      {% if request.user == comment.user %}
+        <a href="{% url 'delete_comment' comment.pk %}"><button type="button">Delete Comment</button></a>
+      {% endif %}
+    </div>
+  {% empty %}
+    <p class="muted">No comments yet.</p>
+  {% endfor %}
+
+{% endblock %}

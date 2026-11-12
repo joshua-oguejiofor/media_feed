@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Feed - MediaFeed{% endblock %}
+{% block content %}
+
+  {% for post in page_obj %}
+    <div class="card">
+      <div class="card-header">
+        <a href="{% url 'profile' post.author.username %}" style="color:inherit;text-decoration:none;">{{ post.author.username }}</a>
+        <span class="muted" style="margin-left:auto;">{{ post.created_at|timesince }} ago</span>
+
+      </div>
+
+      <div class="card-media">
+        {% if post.media_type == 'document' %}
+          <div class="p-3 border rounded bg-light d-flex align-items-center justify-content-between">
+              <div>
+                  <strong>Document Attachment</strong>
+                  <small class="d-block text-muted">Click to view or download</small>
+              </div>
+              <a href="{{ post.media_file }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary btn-sm">
+                  📄 View / Download
+              </a>
+          </div>
+        {% endif %}
+        <a href="{% url 'post_detail' post.pk %}" class="card-media">
+          {% if post.media_type == 'video' %}
+
+            <video controls preload="metadata"> <!--lazy loading-->
+              <source src="{{ post.media_file }}" type="video/mp4">
+            </video>
+
+          {% else %}
+            <img src="{{ post.media_file }}" alt="post media" loading="lazy"> <!--lazy loading-->
+          {% endif %}
+
+         </a>
+      </div>
+
+      <div class="card-body">
+        {% if post.caption %}<p class="caption"><strong>{{ post.author.username }}</strong> {{ post.caption }}</p>{% endif %}
+        <span class="muted">{{ post.likes.count }} like{{ post.likes.count|pluralize }} · {{ post.comments.count }} comment{{ post.comments.count|pluralize }}</span>
+      </div>
+
+      <div class="actions">
+
+        {% if user.is_authenticated %}
+          <form class="inline" method="post" action="{% url 'toggle_like' post.pk %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button type="submit" class="like {% if post.pk in liked_ids %}liked{% endif %}">
+              {% if post.pk in liked_ids %}♥ Liked{% else %}♡ Like{% endif %}
+            </button>
+          </form>
+        {% endif %}
+        <a href="{% url 'post_detail' post.pk %}" class="btn" style="background:transparent;color:var(--text);border:1px solid #333;">Comments</a>
+      </div>
+    </div>
+  {% empty %}
+    <p class="muted">No posts yet. Be the first to <a href="{% url 'create_post' %}">share something</a>.</p>
+  {% endfor %}
+
+  <div class="pagination">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" class="btn">Prev</a>{% endif %}
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="btn">Next</a>{% endif %}
+  </div>
+{% endblock %}

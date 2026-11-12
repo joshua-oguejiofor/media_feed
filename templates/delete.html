@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+
+<!-- Form automatically submits to the same url for the "get" request -->
+
+
+  <h4>Are you sure you want to delete this {{ title }}!</h4>
+  <p>Note, this action cannot be undone.</p>
+  <form method="post">
+    {% csrf_token %}
+    
+    <button type="submit">Delete</button>
+    <a href="{% url 'post_detail' pk=post_pk %}"><button type="button">Cancel</button></a>
+    
+  </form>
+{% endblock %}
+

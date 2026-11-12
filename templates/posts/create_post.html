@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}New Post{% endblock %}
+{% block content %}
+
+
+  <h2>Share a photo or video</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+     {{ form.as_p }}
+    <button type="submit">Post</button>
+  </form>
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const fileInput = document.getElementById("id_media_file");
+    const form = fileInput.closest("form");
+
+    // Exact backend limits (in bytes)
+    const MAX_IMAGE_SIZE = 5 * 1024 * 1024;       // 5MB
+    const MAX_DOCUMENT_SIZE = 5 * 1024 * 1024;   // 5MB
+    const MAX_VIDEO_SIZE = 5 * 1024 * 1024;      // 5MB recommended for synchronous Heroku uploads
+
+    const ALLOWED_IMAGES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    const ALLOWED_VIDEOS = ["video/mp4", "video/webm", "video/quicktime"];
+    const ALLOWED_DOCS = [
+        "application/pdf", 
+        "application/msword", 
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
+        "application/wps-office.docx"
+    ];
+
+    function validateFile(file) {
+        if (!file) return false;
+
+        const mimeType = file.type;
+        let maxSize = 0;
+        let categoryName = "";
+
+        if (ALLOWED_IMAGES.includes(mimeType)) {
+            maxSize = MAX_IMAGE_SIZE;
+            categoryName = "Image (5MB)";
+        } else if (ALLOWED_VIDEOS.includes(mimeType)) {
+            maxSize = MAX_VIDEO_SIZE;
+            categoryName = "Video (5MB limit for direct server uploads)";
+        } else if (ALLOWED_DOCS.includes(mimeType) || file.name.endsWith('.pdf') || file.name.endsWith('.doc') || file.name.endsWith('.docx')) {
+            maxSize = MAX_DOCUMENT_SIZE;
+            categoryName = "Document (5MB)";
+        } else {
+            alert(`Unsupported file format: ${mimeType || file.name}`);
+            fileInput.value = ""; // Clear invalid file
+            return false;
+        }
+
+        if (file.size > maxSize) {
+            alert(`File too large! Maximum limit for ${categoryName} is reached. Your file is ${(file.size / (1024 * 1024)).toFixed(1)}MB.`);
+            fileInput.value = ""; // Clear oversized file
+            return false;
+        }
+
+        return true;
+    }
+
+    // Check file right when the user chooses it
+    fileInput.addEventListener("change", function () {
+        if (this.files.length > 0) {
+            validateFile(this.files[0]);
+        }
+    });
+
+    // Guard against submission
+    form.addEventListener("submit", function (e) {
+        if (fileInput.files.length > 0 && !validateFile(fileInput.files[0])) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+
+{% endblock %}

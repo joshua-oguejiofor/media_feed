@@ -1,0 +1,119 @@
+:root { 
+    --accent:#6a5cff; 
+    --bg:#0f0f13; 
+    --card:#1a1a22;
+     --text:#eee; 
+     --muted:#8a8a96; 
+    }
+    * { 
+        box-sizing: border-box; 
+    }
+    body { 
+        margin:0; 
+        font-family: -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); 
+        color:var(--text); 
+    }
+    nav { 
+        display:flex; 
+        justify-content:space-between; 
+        align-items:center; 
+        padding:14px 20px; 
+        background:var(--card); 
+        position:sticky; 
+        top:0; z-index:10; 
+    }
+    nav a { 
+        color:var(--text); 
+        text-decoration:none; 
+        font-weight:600; 
+        margin-left:16px; 
+    }
+    nav .brand { 
+        color:var(--accent); 
+        font-size:1.2em; 
+    }
+    .container { 
+        max-width:560px; 
+        margin:0 auto; 
+        padding:20px 12px; 
+    }
+    .card { 
+        background:var(--card); 
+        border-radius:12px; 
+        margin-bottom:20px; 
+        overflow:hidden; 
+    }
+    .card-header { 
+        display:flex; 
+        align-items:center; 
+        padding:12px 14px; 
+        font-weight:600; 
+    }
+    .card-media img, .card-media video { 
+        width:100%; 
+        display:block; 
+        max-height:600px; 
+        object-fit:cover; 
+        background:#000; 
+    }
+    .card-body { 
+        padding:12px 14px; 
+    }
+    .caption { 
+        margin:0 0 8px; 
+    }
+    .muted { 
+        color:var(--muted); font-size:0.85em; 
+    }
+    .actions { 
+        display:flex; gap:16px; padding:10px 14px; 
+    }
+    button, .btn { 
+        background:var(--accent); 
+        color:#fff; 
+        border:none; 
+        padding:8px 14px; 
+        border-radius:8px; 
+        cursor:pointer; 
+        text-decoration:none; 
+        font-weight:600; 
+        display:inline-block; 
+    }
+    button.like { 
+        background:transparent; 
+        color:var(--text); 
+        border:1px solid #333; 
+    }
+    button.like.liked { 
+        background:#ff4d6d; 
+        border-color:#ff4d6d; 
+    }
+    form.inline { 
+        display:inline; 
+    }
+    input[type=text], 
+    input[type=password], 
+    input[type=email], 
+    input[type=file], 
+    textarea {
+      width:100%; 
+      padding:10px; 
+      border-radius:8px; 
+      border:1px solid #333; 
+      background:#0f0f13; 
+      color:var(--text); 
+      margin-bottom:12px;
+    }
+    .comment { 
+        padding:6px 0; 
+        border-top:1px solid #26262e; 
+    }
+    .pagination { 
+        display:flex; 
+        justify-content:center; 
+        gap:10px; 
+        margin:20px 0; 
+    }
+    .errorlist { 
+        color:#ff4d6d; 
+    }
